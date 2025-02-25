@@ -1,16 +1,16 @@
-# SQL commands to create and populate the operations log database for Project Three
-# CNT 4714 - Spring 2025
-#
-# delete the database if it already exists
+-- SQL commands to create and populate the operations log database for Project Three
+-- CNT 4714 - Spring 2025
+--
+-- delete the database if it already exists
 drop database if exists operationslog;
 
-# create a new database named operationslog
+-- create a new database named operationslog
 create database operationslog;
 
-# switch to the new database
+-- switch to the new database
 use operationslog;
 
-# create the schemas for the four relations in this database
+-- create the schemas for the four relations in this database
 create table operationscount (
     login_username varchar(25),
     num_queries integer,
@@ -18,5 +18,5 @@ create table operationscount (
     primary key (login_username)
 );
 
-# uncomment the following line if you want to see the results of creating  database
-#select * from operationscount;
+-- uncomment the following line if you want to see the results of creating  database
+--select * from operationscount;

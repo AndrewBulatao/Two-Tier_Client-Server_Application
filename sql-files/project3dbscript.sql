@@ -1,16 +1,16 @@
-# SQL commands to create and populate the MySQL database for Project Three
-# CNT 4714 - Spring 2025
-#
-# delete the database if it already exists
+-- SQL commands to create and populate the MySQL database for Project Three
+-- CNT 4714 - Spring 2025
+--
+-- delete the database if it already exists
 drop database if exists project3;
 
-# create a new database named project3
+-- create a new database named project3
 create database project3;
 
-# switch to the new database
+-- switch to the new database
 use project3;
 
-# create the schemas for the four relations in this database
+-- create the schemas for the four relations in this database
 create table riders (
     ridername varchar(30) not null,
     teamname varchar(20) not null,
@@ -45,7 +45,7 @@ create table racewinners (
     primary key (racename, raceyear)
 );
 
-# populate the database tables
+-- populate the database tables
 
 insert into riders values ('Andy Schleck', 'Leopard-Trek', 'Luxembourg', 35,'M');
 insert into riders values ('Frank Schleck', 'Leopard-Trek','Luxembourg', 28,'M');
@@ -169,7 +169,7 @@ insert into racewinners values ('Liege-Bastogne-Liege', 1972, 'Eddy Merckx', 273
 
 
 
-# uncomment the following 4 lines if you want to see the results of creating and populating the database
-#select * from teams;
-#select * from bikes;
-#select * from racewinners;
+-- uncomment the following 4 lines if you want to see the results of creating and populating the database
+--select * from teams;
+--select * from bikes;
+--select * from racewinners;
