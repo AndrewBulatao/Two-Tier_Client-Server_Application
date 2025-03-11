@@ -18,7 +18,11 @@ public class GUI implements ActionListener{
        private static final int WINDOW_HEIGHT = 800;
        private static final int FIELD_WIDTH = 70; 
        private static final int MAX_WIDTH = 70; 
-       private static final int BUT_WIDTH = 400;
+       private static final int BUT_WIDTH = 250;
+       private static final int BUT_HEIGHT = 40;
+
+
+       
     
        JFrame window = new JFrame("SQL CLIENT APPLICATION - (MJL - CNT 4714 - SPRING 2025 - PROJECT 3)");
     
@@ -26,30 +30,44 @@ public class GUI implements ActionListener{
 
        // Creating sections
        JPanel topSection = new JPanel();
-       JPanel midSection = new JPanel();
+       JPanel topRight = new JPanel();
+       JPanel topLeft = new JPanel();
+
        JPanel botSection = new JPanel();
 
-        // Top section components
+        // Top section components: 4 lables, 2 textfields, 2 dropdowns, 2 titles (labels), 1 huge text field, 
+        // Setting sizes
+        // 4 buttons (two for each column)
+        private final JLabel connectionTitle = new JLabel("Connection Details");
+        private final JLabel blankFiller = new JLabel("");
+
+        private final JLabel sqlTitle = new JLabel("Enter an SQL Command");
+        
+        private final JLabel urlPropLabel = new JLabel("Enter an SQL Command");
+        private final JLabel userPropLabel = new JLabel("Enter an SQL Command");
+        private final JLabel usernameLabel = new JLabel("Enter an SQL Command");
+        private final JLabel passwordLabel = new JLabel("Enter an SQL Command");
+
+        private static JTextField usernameText = new JTextField();
+        private static JTextField passwordText = new JTextField();
+        private static JTextArea sqlCmdText = new JTextArea();
+        
+        JComboBox<String> urlDrop = new JComboBox<>();
+        JComboBox<String> userDrop = new JComboBox<>();
+
+
        
 
-       // These need to be uneditable
-      
-
-       // Middle section components: 
-       private static JLabel midTitle = new JLabel("Your shopping Cart is Currently Empty");
        
-       // Bottom section components: 
-       private static final JLabel botTitle  = new JLabel("User Controls");
+       // Bottom section components: two labels, a panel that should not be editable
+       private static final JLabel botTitle  = new JLabel("NO CONNECTIONS ESTABLISHED");
 
-       // Will split bottom section into two rows. First row will have title/ second row will have buttons
-       JPanel botTopRow = new JPanel();
-       JPanel botBotRow = new JPanel();
 
        // Buttons
-       JButton connectBut = new JButton();
-       JButton disconnectBut = new JButton();
-       JButton clearSQLBut = new JButton();
-       JButton executeSQLBut = new JButton();
+       JButton connectBut = new JButton("Connect to Database");
+       JButton disconnectBut = new JButton("Disconnect From Database");
+       JButton clearSQLBut = new JButton("Clear SQL Command");
+       JButton executeSQLBut = new JButton("Execute SQL Command");
        JButton clearResBut = new JButton();
        JButton exitAppBut = new JButton();
 
@@ -61,49 +79,79 @@ public class GUI implements ActionListener{
               window.setResizable(true);
 
               Container c = window.getContentPane();
-              c.setLayout(new GridLayout(3, 1));
+              c.setLayout(new GridLayout(2, 1));
               // Adding sections
               c.add(topSection);
-              c.add(midSection);
               c.add(botSection);
 
               //Top section
+              // Set sizes
+              sqlTitle.setPreferredSize(new Dimension(500,30)); 
+              sqlCmdText.setPreferredSize(new Dimension(500, 200));
+              clearSQLBut.setPreferredSize(new Dimension(BUT_WIDTH, BUT_HEIGHT));
+              executeSQLBut.setPreferredSize(new Dimension(BUT_WIDTH, BUT_HEIGHT));
+
+
+
+
+
+
+              // Add components
+              topSection.setLayout(new GridLayout(1, 2));
+              topLeft.setLayout(new GridLayout(6,2));
+              //topRight.setLayout(new GridLayout(3,2));
+              topSection.add(topLeft);
+              topSection.add(topRight);
+
+              // Add to left side
+              topLeft.add(connectionTitle);
+              topLeft.add(blankFiller);
+              topLeft.add(urlPropLabel);
+              topLeft.add(urlDrop);
+              topLeft.add(userPropLabel);
+              topLeft.add(userDrop);
+              topLeft.add(usernameLabel);
+              topLeft.add(usernameText);
+              topLeft.add(usernameText);
+              topLeft.add(passwordLabel);
+              topLeft.add(passwordText);
+              topLeft.add(connectBut);
+              topLeft.add(disconnectBut);
+
+              // Add right
+              topRight.add(sqlTitle);
+              topRight.add(sqlCmdText);
+              topRight.add(clearSQLBut);
+              topRight.add(executeSQLBut);
+
               
 
-              // Set text color
+
               
+
+              // Set label color/size
+              
+              // Set 
 
               // Adding and aligning tags
               
-
-              //_____________________________________________________
-              // Middle Section
-              
-
-              // Adding title and text boxes
               
               //_____________________________________________________
               // Bottom Section 
               botSection.setBackground(Color.blue);
+              botSection.setPreferredSize(new Dimension(WINDOW_WIDTH, 100)); // Adjust height as needed
               botSection.setLayout(new BorderLayout()); 
-              
-              // Top Row components & settings
-              
+
+
               
 
-              // Bot Row components & settings
               
 
 
        
               // Setting size
               // set size of buttons
-              connectBut.setPreferredSize(new Dimension(BUT_WIDTH,40));
-              clearSQLBut.setPreferredSize(new Dimension(BUT_WIDTH,40));
-              executeSQLBut.setPreferredSize(new Dimension(BUT_WIDTH,40));
-              disconnectBut.setPreferredSize(new Dimension(BUT_WIDTH,40));
-              clearResBut.setPreferredSize(new Dimension(BUT_WIDTH,40));
-              exitAppBut.setPreferredSize(new Dimension(BUT_WIDTH,40));
+
 
               // Setting which one to show when first boot up: delete, add, checkout, empty
               
