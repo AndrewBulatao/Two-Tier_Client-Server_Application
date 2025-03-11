@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -57,9 +58,10 @@ public class GUI implements ActionListener{
         JComboBox<String> userDrop = new JComboBox<>();
 
 
-       
-
-       
+        // Bottom section: 2 Titles(labels), One big text box - make uneditable, two buttons
+        private static JLabel connectionLabel = new JLabel("NO CONNECTION ESTABLISHED");
+        private static JLabel resultLabel = new JLabel("SQL Execution Result Window");
+        private static JTextArea resultArea = new JTextArea("");
        // Bottom section components: two labels, a panel that should not be editable
        private static final JLabel botTitle  = new JLabel("NO CONNECTIONS ESTABLISHED");
 
@@ -69,8 +71,8 @@ public class GUI implements ActionListener{
        JButton disconnectBut = new JButton("Disconnect From Database");
        JButton clearSQLBut = new JButton("Clear SQL Command");
        JButton executeSQLBut = new JButton("Execute SQL Command");
-       JButton clearResBut = new JButton();
-       JButton exitAppBut = new JButton();
+       JButton clearResBut = new JButton("Clear Results Window");
+       JButton exitAppBut = new JButton("Close application");
 
     
        public void createWindow(){
@@ -145,21 +147,29 @@ public class GUI implements ActionListener{
               //_____________________________________________________
               // Bottom Section 
               botSection.setBackground(Color.GRAY);
-              botSection.setPreferredSize(new Dimension(WINDOW_WIDTH, 100)); // Adjust height as needed
-              botSection.setLayout(new BorderLayout()); 
+              //topSection.setLayout(new GridLayout(1,1));
 
+              botSection.add(connectionLabel);
+              botSection.add(resultLabel);
+              botSection.add(resultArea);
+              botSection.add(clearResBut);
+              botSection.add(exitAppBut);
 
-              
-
-              
-
-
-       
               // Setting size
-              // set size of buttons
+              connectionLabel.setPreferredSize(new Dimension(550,30)); 
+              resultLabel.setPreferredSize(new Dimension(545,30)); 
+              resultArea.setPreferredSize(new Dimension(1000,250));
+              clearResBut.setPreferredSize(new Dimension(BUT_WIDTH,BUT_HEIGHT));
+              exitAppBut.setPreferredSize(new Dimension(BUT_WIDTH,BUT_HEIGHT));
+
+              connectionLabel.setFont(new Font(botTitle.getFont().getName(),Font.BOLD, 20));
+
+              connectionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+              resultLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 
-              // Setting which one to show when first boot up: delete, add, checkout, empty
+              
+
               
               // Add ActionListener to buttons
               connectBut.addActionListener(this);
