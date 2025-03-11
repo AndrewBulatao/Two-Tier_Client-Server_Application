@@ -4,22 +4,23 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-
 import javax.swing.*;
 
 public class GUI implements ActionListener{
        //Class contents
        private static final int WINDOW_WIDTH = 1100;
        private static final int WINDOW_HEIGHT = 800;
-       private static final int FIELD_WIDTH = 70; 
-       private static final int MAX_WIDTH = 70; 
+       private static final int LABEL_HEIGHT = 40; 
+       private static final int LABEL_WIDTH = 250; 
        private static final int BUT_WIDTH = 250;
        private static final int BUT_HEIGHT = 40;
+       private static final int DROP_HEIGHT = 40;
+       private static final int DROP_WIDTH = 250;
+
+
 
 
        
@@ -43,10 +44,10 @@ public class GUI implements ActionListener{
 
         private final JLabel sqlTitle = new JLabel("Enter an SQL Command");
         
-        private final JLabel urlPropLabel = new JLabel("Enter an SQL Command");
-        private final JLabel userPropLabel = new JLabel("Enter an SQL Command");
-        private final JLabel usernameLabel = new JLabel("Enter an SQL Command");
-        private final JLabel passwordLabel = new JLabel("Enter an SQL Command");
+        private final JLabel urlPropLabel = new JLabel("DB URL Properties");
+        private final JLabel userPropLabel = new JLabel("User Properties");
+        private final JLabel usernameLabel = new JLabel("Username");
+        private final JLabel passwordLabel = new JLabel("Password");
 
         private static JTextField usernameText = new JTextField();
         private static JTextField passwordText = new JTextField();
@@ -85,23 +86,16 @@ public class GUI implements ActionListener{
               c.add(botSection);
 
               //Top section
-              // Set sizes
-              sqlTitle.setPreferredSize(new Dimension(500,30)); 
-              sqlCmdText.setPreferredSize(new Dimension(500, 200));
-              clearSQLBut.setPreferredSize(new Dimension(BUT_WIDTH, BUT_HEIGHT));
-              executeSQLBut.setPreferredSize(new Dimension(BUT_WIDTH, BUT_HEIGHT));
-
-
-
-
-
 
               // Add components
               topSection.setLayout(new GridLayout(1, 2));
-              topLeft.setLayout(new GridLayout(6,2));
+              //topLeft.setLayout(new GridLayout(6,2));
+
               //topRight.setLayout(new GridLayout(3,2));
               topSection.add(topLeft);
               topSection.add(topRight);
+
+              topRight.setBackground(Color.LIGHT_GRAY);
 
               // Add to left side
               topLeft.add(connectionTitle);
@@ -118,27 +112,39 @@ public class GUI implements ActionListener{
               topLeft.add(connectBut);
               topLeft.add(disconnectBut);
 
+              // Set Sizes
+              connectionTitle.setPreferredSize(new Dimension(500,30)); 
+              urlPropLabel.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT)); 
+              userPropLabel.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT)); 
+              usernameLabel.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT)); 
+              usernameText.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT)); 
+              passwordLabel.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT)); 
+              passwordText.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT)); 
+              connectBut.setPreferredSize(new Dimension(BUT_WIDTH,BUT_HEIGHT)); 
+              disconnectBut.setPreferredSize(new Dimension(BUT_WIDTH,BUT_HEIGHT)); 
+              userDrop.setPreferredSize(new Dimension(DROP_WIDTH,DROP_HEIGHT)); 
+              urlDrop.setPreferredSize(new Dimension(DROP_WIDTH,DROP_HEIGHT)); 
+              //_____________________________________________________
               // Add right
               topRight.add(sqlTitle);
               topRight.add(sqlCmdText);
               topRight.add(clearSQLBut);
               topRight.add(executeSQLBut);
 
-              
+              // Set sizes
+              sqlTitle.setPreferredSize(new Dimension(500,30)); 
+              sqlCmdText.setPreferredSize(new Dimension(500, 200));
+              clearSQLBut.setPreferredSize(new Dimension(BUT_WIDTH, BUT_HEIGHT));
+              executeSQLBut.setPreferredSize(new Dimension(BUT_WIDTH, BUT_HEIGHT));
 
-
-              
-
-              // Set label color/size
-              
-              // Set 
-
-              // Adding and aligning tags
-              
-              
+              // Set colors
+              connectionTitle.setForeground(Color.BLUE);
+              sqlTitle.setForeground(Color.BLUE);
+              clearSQLBut.setForeground(Color.RED);
+              executeSQLBut.setForeground(Color.GREEN);
               //_____________________________________________________
               // Bottom Section 
-              botSection.setBackground(Color.blue);
+              botSection.setBackground(Color.GRAY);
               botSection.setPreferredSize(new Dimension(WINDOW_WIDTH, 100)); // Adjust height as needed
               botSection.setLayout(new BorderLayout()); 
 
