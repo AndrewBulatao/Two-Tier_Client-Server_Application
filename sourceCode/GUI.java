@@ -188,17 +188,22 @@ public class GUI implements ActionListener{
        // Implementing the required actionPerformed method from ActionListener
        @SuppressWarnings("unused")
        @Override
-              public void actionPerformed(ActionEvent e) {
-                     Object s = e.getSource();
+       public void actionPerformed(ActionEvent e) {
+              Object s = e.getSource();
 
-                     if(s == clearSQLBut){
-                            sqlCmdText.setText("");
-                     }
-
-                     if (s == exitAppBut){
-                            System.exit(0);
-                            window.dispose();
-
+              if(s == clearSQLBut){
+                     sqlCmdText.setText("");
               }
+
+              if (s == exitAppBut){
+                     System.exit(0);
+                     window.dispose();
+
+              if(s == clearResBut){
+                     // Need to make sure something == nothing?
+                     resultArea.setText("");
+              }
+              
        }
-}
+} // 
+} // GUI class ends here
