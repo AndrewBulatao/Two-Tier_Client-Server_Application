@@ -162,15 +162,16 @@ public class GUI implements ActionListener{
               clearResBut.setPreferredSize(new Dimension(BUT_WIDTH,BUT_HEIGHT));
               exitAppBut.setPreferredSize(new Dimension(BUT_WIDTH,BUT_HEIGHT));
 
+              connectionLabel.setOpaque(true);
+              connectionLabel.setBackground(Color.LIGHT_GRAY); 
+              connectionLabel.setForeground(Color.RED);
               connectionLabel.setFont(new Font(botTitle.getFont().getName(),Font.BOLD, 20));
 
               connectionLabel.setHorizontalAlignment(SwingConstants.CENTER);
               resultLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+              resultArea.setEditable(false);
 
-              
-
-              
               // Add ActionListener to buttons
               connectBut.addActionListener(this);
               clearSQLBut.addActionListener(this);
@@ -187,5 +188,17 @@ public class GUI implements ActionListener{
        // Implementing the required actionPerformed method from ActionListener
        @SuppressWarnings("unused")
        @Override
-              public void actionPerformed(ActionEvent e) {}
+              public void actionPerformed(ActionEvent e) {
+                     Object s = e.getSource();
+
+                     if(s == clearSQLBut){
+                            sqlCmdText.setText("");
+                     }
+
+                     if (s == exitAppBut){
+                            System.exit(0);
+                            window.dispose();
+
+              }
+       }
 }
