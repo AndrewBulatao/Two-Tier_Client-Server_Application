@@ -1,6 +1,5 @@
 package sourceCode;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -22,7 +21,7 @@ public class GUI implements ActionListener{
        private static final int DROP_WIDTH = 250;
 
 
-
+       private DatabaseReader db = null;
 
        
     
@@ -203,7 +202,19 @@ public class GUI implements ActionListener{
                      // Need to make sure something == nothing?
                      resultArea.setText("");
               }
+
+              if(s == disconnectBut){ // Reset everything to the original state, disconnect from the current database
+
+
+              }
               
+              if(s == connectBut){
+                     // Check if the user credentials are correct, if not look at #11 in the doc
+
+                     // Check if we have an error with the permission of the user accessing the db
+                     // If they have access, display information
+
+              }
        }
-} // 
+} // end of actionPerformed
 } // GUI class ends here
