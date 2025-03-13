@@ -8,240 +8,188 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
-import javax.swing.*;
+public class GUI implements ActionListener {
+   private static final int WINDOW_WIDTH = 1100;
+   private static final int WINDOW_HEIGHT = 800;
+   private static final int LABEL_HEIGHT = 40;
+   private static final int LABEL_WIDTH = 250;
+   private static final int BUT_WIDTH = 250;
+   private static final int BUT_HEIGHT = 40;
+   private static final int DROP_HEIGHT = 40;
+   private static final int DROP_WIDTH = 250;
+   private List<String> urlDropList;
+   private List<String> dbDropList;
+   private DatabaseReader db;
+   JFrame window = new JFrame("SQL CLIENT APPLICATION - (MJL - CNT 4714 - SPRING 2025 - PROJECT 3)");
+   JPanel topSection = new JPanel();
+   JPanel topRight = new JPanel();
+   JPanel topLeft = new JPanel();
+   JPanel botSection = new JPanel();
+   private final JLabel connectionTitle = new JLabel("Connection Details");
+   private final JLabel blankFiller = new JLabel("");
+   private final JLabel sqlTitle = new JLabel("Enter an SQL Command");
+   private final JLabel urlPropLabel = new JLabel("DB URL Properties");
+   private final JLabel userPropLabel = new JLabel("User Properties");
+   private final JLabel usernameLabel = new JLabel("Username");
+   private final JLabel passwordLabel = new JLabel("Password");
+   private static JTextField usernameText = new JTextField();
+   private static JTextField passwordText = new JTextField();
+   private static JTextArea sqlCmdText = new JTextArea();
+   JComboBox<String> urlDrop = new JComboBox();
+   JComboBox<String> userDrop = new JComboBox();
+   private static JLabel connectionLabel = new JLabel("NO CONNECTION ESTABLISHED");
+   private static JLabel resultLabel = new JLabel("SQL Execution Result Window");
+   private static JTextArea resultArea = new JTextArea("");
+   private static final JLabel botTitle = new JLabel("NO CONNECTIONS ESTABLISHED");
+   JButton connectBut = new JButton("Connect to Database");
+   JButton disconnectBut = new JButton("Disconnect From Database");
+   JButton clearSQLBut = new JButton("Clear SQL Command");
+   JButton executeSQLBut = new JButton("Execute SQL Command");
+   JButton clearResBut = new JButton("Clear Results Window");
+   JButton exitAppBut = new JButton("Close application");
 
-public class GUI implements ActionListener{
-       //Class contents
-       private static final int WINDOW_WIDTH = 1100;
-       private static final int WINDOW_HEIGHT = 800;
-       private static final int LABEL_HEIGHT = 40; 
-       private static final int LABEL_WIDTH = 250; 
-       private static final int BUT_WIDTH = 250;
-       private static final int BUT_HEIGHT = 40;
-       private static final int DROP_HEIGHT = 40;
-       private static final int DROP_WIDTH = 250;
+   public GUI(DatabaseReader var1) {
+      this.db = var1;
+   }
 
-       private List<String> urlDropList;
+   public void populateUserDrop() {
+      try {
+         this.urlDropList = this.db.getUsers();
+         userDrop.removeAllItems(); // Clear existing items
+         for (String user : urlDropList) {
+            userDrop.addItem(user);
+         }
+      } catch (SQLException e) {
+         e.printStackTrace();
+         JOptionPane.showMessageDialog(this.window, "Error fetching users from database.");
+      }
 
-       private DatabaseReader db;
+   }
 
-       public GUI(DatabaseReader db){
-              this.db = db;
-       }
+   public void populateDatabaseDrop() {
+      try {
+         List<String> databases = this.db.getDatabases();  // Fetch list of databases
 
-       // Attempt to poputulate the drop downs
-       
-    
-       JFrame window = new JFrame("SQL CLIENT APPLICATION - (MJL - CNT 4714 - SPRING 2025 - PROJECT 3)");
-    
+         this.urlDrop.removeAllItems();  // Clear dropdown before adding new items
 
-       // Creating sections
-       JPanel topSection = new JPanel();
-       JPanel topRight = new JPanel();
-       JPanel topLeft = new JPanel();
-
-       JPanel botSection = new JPanel();
-
-        // Top section components: 4 lables, 2 textfields, 2 dropdowns, 2 titles (labels), 1 huge text field, 
-        // Setting sizes
-        // 4 buttons (two for each column)
-        private final JLabel connectionTitle = new JLabel("Connection Details");
-        private final JLabel blankFiller = new JLabel("");
-
-        private final JLabel sqlTitle = new JLabel("Enter an SQL Command");
-        
-        private final JLabel urlPropLabel = new JLabel("DB URL Properties");
-        private final JLabel userPropLabel = new JLabel("User Properties");
-        private final JLabel usernameLabel = new JLabel("Username");
-        private final JLabel passwordLabel = new JLabel("Password");
-
-        private static JTextField usernameText = new JTextField();
-        private static JTextField passwordText = new JTextField();
-        private static JTextArea sqlCmdText = new JTextArea();
-        
-        JComboBox<String> urlDrop = new JComboBox<>();
-        JComboBox<String> userDrop = new JComboBox<>();
-
-
-        // Bottom section: 2 Titles(labels), One big text box - make uneditable, two buttons
-        private static JLabel connectionLabel = new JLabel("NO CONNECTION ESTABLISHED");
-        private static JLabel resultLabel = new JLabel("SQL Execution Result Window");
-        private static JTextArea resultArea = new JTextArea("");
-       
-        // Bottom section components: two labels, a panel that should not be editable
-       private static final JLabel botTitle  = new JLabel("NO CONNECTIONS ESTABLISHED");
-
-
-       // Buttons
-       JButton connectBut = new JButton("Connect to Database");
-       JButton disconnectBut = new JButton("Disconnect From Database");
-       JButton clearSQLBut = new JButton("Clear SQL Command");
-       JButton executeSQLBut = new JButton("Execute SQL Command");
-       JButton clearResBut = new JButton("Clear Results Window");
-       JButton exitAppBut = new JButton("Close application");
-
-       public void populateUserDrop() {
-              try {
-                  // Fetch the list of users from the DatabaseReader
-                  urlDropList = db.getUsers(); 
-                  // Adding the list of users to the JComboBox
-                  for (String user : urlDropList) {
-                      userDrop.addItem(user); // Add each user to the dropdown
-                  }
-              } catch (SQLException e) {
-                  e.printStackTrace();
-                  JOptionPane.showMessageDialog(window, "Error fetching users from database.");
-              }
-          }
-
-    
-       public void createWindow(){
-              // Creating window size, close when exiting, disable resizing
-              window.setSize(WINDOW_WIDTH,WINDOW_HEIGHT);
-              window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-              window.setResizable(true);
-
-              // Populating dropdowns
-              populateUserDrop();
-
-              Container c = window.getContentPane();
-              c.setLayout(new GridLayout(2, 1));
-              // Adding sections
-              c.add(topSection);
-              c.add(botSection);
-
-              //Top section
-
-              // Add components
-              topSection.setLayout(new GridLayout(1, 2));
-              //topLeft.setLayout(new GridLayout(6,2));
-
-              //topRight.setLayout(new GridLayout(3,2));
-              topSection.add(topLeft);
-              topSection.add(topRight);
-
-              topRight.setBackground(Color.LIGHT_GRAY);
-
-              // Add to left side
-              topLeft.add(connectionTitle);
-              topLeft.add(blankFiller);
-              topLeft.add(urlPropLabel);
-              topLeft.add(urlDrop);
-              topLeft.add(userPropLabel);
-              topLeft.add(userDrop);
-              topLeft.add(usernameLabel);
-              topLeft.add(usernameText);
-              topLeft.add(usernameText);
-              topLeft.add(passwordLabel);
-              topLeft.add(passwordText);
-              topLeft.add(connectBut);
-              topLeft.add(disconnectBut);
-
-              // Set Sizes
-              connectionTitle.setPreferredSize(new Dimension(500,30)); 
-              urlPropLabel.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT)); 
-              userPropLabel.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT)); 
-              usernameLabel.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT)); 
-              usernameText.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT)); 
-              passwordLabel.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT)); 
-              passwordText.setPreferredSize(new Dimension(LABEL_WIDTH,LABEL_HEIGHT)); 
-              connectBut.setPreferredSize(new Dimension(BUT_WIDTH,BUT_HEIGHT)); 
-              disconnectBut.setPreferredSize(new Dimension(BUT_WIDTH,BUT_HEIGHT)); 
-              userDrop.setPreferredSize(new Dimension(DROP_WIDTH,DROP_HEIGHT)); 
-              urlDrop.setPreferredSize(new Dimension(DROP_WIDTH,DROP_HEIGHT)); 
-              //_____________________________________________________
-              // Add right
-              topRight.add(sqlTitle);
-              topRight.add(sqlCmdText);
-              topRight.add(clearSQLBut);
-              topRight.add(executeSQLBut);
-
-              // Set sizes
-              sqlTitle.setPreferredSize(new Dimension(500,30)); 
-              sqlCmdText.setPreferredSize(new Dimension(500, 200));
-              clearSQLBut.setPreferredSize(new Dimension(BUT_WIDTH, BUT_HEIGHT));
-              executeSQLBut.setPreferredSize(new Dimension(BUT_WIDTH, BUT_HEIGHT));
-
-              // Set colors
-              connectionTitle.setForeground(Color.BLUE);
-              sqlTitle.setForeground(Color.BLUE);
-              clearSQLBut.setForeground(Color.RED);
-              executeSQLBut.setForeground(Color.GREEN);
-              //_____________________________________________________
-              // Bottom Section 
-              botSection.setBackground(Color.GRAY);
-              //topSection.setLayout(new GridLayout(1,1));
-
-              botSection.add(connectionLabel);
-              botSection.add(resultLabel);
-              botSection.add(resultArea);
-              botSection.add(clearResBut);
-              botSection.add(exitAppBut);
-
-              // Setting size
-              connectionLabel.setPreferredSize(new Dimension(550,30)); 
-              resultLabel.setPreferredSize(new Dimension(545,30)); 
-              resultArea.setPreferredSize(new Dimension(1000,250));
-              clearResBut.setPreferredSize(new Dimension(BUT_WIDTH,BUT_HEIGHT));
-              exitAppBut.setPreferredSize(new Dimension(BUT_WIDTH,BUT_HEIGHT));
-
-              connectionLabel.setOpaque(true);
-              connectionLabel.setBackground(Color.LIGHT_GRAY); 
-              connectionLabel.setForeground(Color.RED);
-              connectionLabel.setFont(new Font(botTitle.getFont().getName(),Font.BOLD, 20));
-
-              connectionLabel.setHorizontalAlignment(SwingConstants.CENTER);
-              resultLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-              resultArea.setEditable(false);
-
-              // Add ActionListener to buttons
-              connectBut.addActionListener(this);
-              clearSQLBut.addActionListener(this);
-              executeSQLBut.addActionListener(this);
-              disconnectBut.addActionListener(this);
-              clearResBut.addActionListener(this);
-              exitAppBut.addActionListener(this);
-              
-              // Make window visible
-              window.setVisible(true);
-       }
-              
-
-       // Implementing the required actionPerformed method from ActionListener
-       @SuppressWarnings("unused")
-       @Override
-       public void actionPerformed(ActionEvent e) {
-              Object s = e.getSource();
-
-              if(s == clearSQLBut){
-                     sqlCmdText.setText("");
-              }
-
-              if (s == exitAppBut){
-                     System.exit(0);
-                     window.dispose();
-
-              if(s == clearResBut){
-                     // Need to make sure something == nothing?
-                     resultArea.setText("");
-              }
-
-              if(s == disconnectBut){ // Reset everything to the original state, disconnect from the current database
+         for (String db : databases) {
+            this.urlDrop.addItem(db);  // Add each database to the dropdown
+         }
+      } catch (SQLException e) {
+         e.printStackTrace();
+         JOptionPane.showMessageDialog(this.window, "Error fetching databases from database.");
+      }
+   }
 
 
-              }
-              
-              if(s == connectBut){
-                     // Check if the user credentials are correct, if not look at #11 in the doc
+      public void createWindow() {
+      this.window.setSize(1100, 800);
+      this.window.setDefaultCloseOperation(3);
+      this.window.setResizable(true);
+      this.populateUserDrop();
+      this.populateDatabaseDrop();
 
-                     // Check if we have an error with the permission of the user accessing the db
-                     // If they have access, display information
+      Container var1 = this.window.getContentPane();
+      var1.setLayout(new GridLayout(2, 1));
+      var1.add(this.topSection);
+      var1.add(this.botSection);
+      this.topSection.setLayout(new GridLayout(1, 2));
+      this.topSection.add(this.topLeft);
+      this.topSection.add(this.topRight);
+      this.topRight.setBackground(Color.LIGHT_GRAY);
+      this.topLeft.add(this.connectionTitle);
+      this.topLeft.add(this.blankFiller);
+      this.topLeft.add(this.urlPropLabel);
+      this.topLeft.add(this.urlDrop);
+      this.topLeft.add(this.userPropLabel);
+      this.topLeft.add(this.userDrop);
+      this.topLeft.add(this.usernameLabel);
+      this.topLeft.add(usernameText);
+      this.topLeft.add(usernameText);
+      this.topLeft.add(this.passwordLabel);
+      this.topLeft.add(passwordText);
+      this.topLeft.add(this.connectBut);
+      this.topLeft.add(this.disconnectBut);
+      this.connectionTitle.setPreferredSize(new Dimension(500, 30));
+      this.urlPropLabel.setPreferredSize(new Dimension(250, 40));
+      this.userPropLabel.setPreferredSize(new Dimension(250, 40));
+      this.usernameLabel.setPreferredSize(new Dimension(250, 40));
+      usernameText.setPreferredSize(new Dimension(250, 40));
+      this.passwordLabel.setPreferredSize(new Dimension(250, 40));
+      passwordText.setPreferredSize(new Dimension(250, 40));
+      this.connectBut.setPreferredSize(new Dimension(250, 40));
+      this.disconnectBut.setPreferredSize(new Dimension(250, 40));
+      this.userDrop.setPreferredSize(new Dimension(250, 40));
+      this.urlDrop.setPreferredSize(new Dimension(250, 40));
+      this.topRight.add(this.sqlTitle);
+      this.topRight.add(sqlCmdText);
+      this.topRight.add(this.clearSQLBut);
+      this.topRight.add(this.executeSQLBut);
+      this.sqlTitle.setPreferredSize(new Dimension(500, 30));
+      sqlCmdText.setPreferredSize(new Dimension(500, 200));
+      this.clearSQLBut.setPreferredSize(new Dimension(250, 40));
+      this.executeSQLBut.setPreferredSize(new Dimension(250, 40));
+      this.connectionTitle.setForeground(Color.BLUE);
+      this.sqlTitle.setForeground(Color.BLUE);
+      this.clearSQLBut.setForeground(Color.RED);
+      this.executeSQLBut.setForeground(Color.GREEN);
+      this.botSection.setBackground(Color.GRAY);
+      this.botSection.add(connectionLabel);
+      this.botSection.add(resultLabel);
+      this.botSection.add(resultArea);
+      this.botSection.add(this.clearResBut);
+      this.botSection.add(this.exitAppBut);
+      connectionLabel.setPreferredSize(new Dimension(550, 30));
+      resultLabel.setPreferredSize(new Dimension(545, 30));
+      resultArea.setPreferredSize(new Dimension(1000, 250));
+      this.clearResBut.setPreferredSize(new Dimension(250, 40));
+      this.exitAppBut.setPreferredSize(new Dimension(250, 40));
+      connectionLabel.setOpaque(true);
+      connectionLabel.setBackground(Color.LIGHT_GRAY);
+      connectionLabel.setForeground(Color.RED);
+      connectionLabel.setFont(new Font(botTitle.getFont().getName(), 1, 20));
+      connectionLabel.setHorizontalAlignment(0);
+      resultLabel.setHorizontalAlignment(0);
+      resultArea.setEditable(false);
+      this.connectBut.addActionListener(this);
+      this.clearSQLBut.addActionListener(this);
+      this.executeSQLBut.addActionListener(this);
+      this.disconnectBut.addActionListener(this);
+      this.clearResBut.addActionListener(this);
+      this.exitAppBut.addActionListener(this);
+      this.window.setVisible(true);
+   }
 
-              }
-       }
-} // end of actionPerformed
-} // GUI class ends here
+   public void actionPerformed(ActionEvent var1) {
+      Object var2 = var1.getSource();
+      if (var2 == this.clearSQLBut) {
+         sqlCmdText.setText("");
+      }
+
+      if (var2 == this.exitAppBut) {
+         System.exit(0);
+         this.window.dispose();
+         if (var2 == this.clearResBut) {
+            resultArea.setText("");
+         }
+
+         if (var2 == this.disconnectBut) {
+         }
+
+         if (var2 == this.connectBut) {
+         }
+      }
+
+   }
+}
