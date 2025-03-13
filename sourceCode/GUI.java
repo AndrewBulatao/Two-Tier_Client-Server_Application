@@ -7,6 +7,10 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.*;
 
 public class GUI implements ActionListener{
@@ -20,14 +24,19 @@ public class GUI implements ActionListener{
        private static final int DROP_HEIGHT = 40;
        private static final int DROP_WIDTH = 250;
 
+       private List<String> urlDropList;
 
-       private DatabaseReader db = null;
+       private DatabaseReader db;
 
+       public GUI(DatabaseReader db){
+              this.db = db;
+       }
+
+       // Attempt to poputulate the drop downs
        
     
        JFrame window = new JFrame("SQL CLIENT APPLICATION - (MJL - CNT 4714 - SPRING 2025 - PROJECT 3)");
     
-       //private static final FlowLayout LAYOUT_STYLE = new FlowLayout();
 
        // Creating sections
        JPanel topSection = new JPanel();
@@ -61,7 +70,8 @@ public class GUI implements ActionListener{
         private static JLabel connectionLabel = new JLabel("NO CONNECTION ESTABLISHED");
         private static JLabel resultLabel = new JLabel("SQL Execution Result Window");
         private static JTextArea resultArea = new JTextArea("");
-       // Bottom section components: two labels, a panel that should not be editable
+       
+        // Bottom section components: two labels, a panel that should not be editable
        private static final JLabel botTitle  = new JLabel("NO CONNECTIONS ESTABLISHED");
 
 
@@ -73,12 +83,29 @@ public class GUI implements ActionListener{
        JButton clearResBut = new JButton("Clear Results Window");
        JButton exitAppBut = new JButton("Close application");
 
+       public void populateUserDrop() {
+              try {
+                  // Fetch the list of users from the DatabaseReader
+                  urlDropList = db.getUsers(); 
+                  // Adding the list of users to the JComboBox
+                  for (String user : urlDropList) {
+                      userDrop.addItem(user); // Add each user to the dropdown
+                  }
+              } catch (SQLException e) {
+                  e.printStackTrace();
+                  JOptionPane.showMessageDialog(window, "Error fetching users from database.");
+              }
+          }
+
     
        public void createWindow(){
               // Creating window size, close when exiting, disable resizing
               window.setSize(WINDOW_WIDTH,WINDOW_HEIGHT);
               window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
               window.setResizable(true);
+
+              // Populating dropdowns
+              populateUserDrop();
 
               Container c = window.getContentPane();
               c.setLayout(new GridLayout(2, 1));
