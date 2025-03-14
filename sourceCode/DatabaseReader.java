@@ -43,7 +43,7 @@ public class DatabaseReader{
         String password = uP.getProperty("db.password");
 
         conn = DriverManager.getConnection(url, user, password);
-        System.out.println("WE CONNECTED");
+        //System.out.println("WE CONNECTED");
     }
 
     public List<String> getUsers() throws SQLException {
@@ -88,10 +88,56 @@ public class DatabaseReader{
 
         return databases;
     }
-    public static Connection getConnection() throws Exception {
-        String url = "jdbc:mysql://localhost:3306/operationslog"; 
-        String user = "root";  
-        String password = "password123"; 
-        return DriverManager.getConnection(url, user, password);
+
+    public String checkIfLoginValid(String selectedUser, String selectedDatabase, String userInput, String userPass) throws SQLException {
+        // If the entered user doesn't match the selected user, return false
+        if (!selectedUser.equals(userInput + ".properties")) {
+            //System.out.println("Selected user does not match entered username.");
+            //System.out.println(selectedUser + "\n");
+            //System.out.println(userInput);
+            return "ERROR: Selected user does not match entered username.";
+        }
+
+        Properties userProps = new Properties();
+        String userPath = new File("sourceCode/properties/" + selectedUser).getAbsolutePath();  // Use the selected user for path
+
+        // Check if the user properties file exists
+        try (FileInputStream userFile = new FileInputStream(userPath)) {
+            userProps.load(userFile);
+        } catch (IOException e) {
+            System.out.println("User properties file not found for: " + selectedUser);
+            return ("ERROR: User properties file not found for" + selectedUser);
+        }
+
+        // Get the username and password from the properties file
+        String storedUser = userProps.getProperty("db.user");
+        String storedPass = userProps.getProperty("db.password");
+
+        // Check if the entered username and password match the stored credentials
+        if (!userInput.equals(storedUser) || !userPass.equals(storedPass)) {
+            System.out.println("Invalid username or password.");
+            return ("ERROR: Invalid username or password.");
+        }
+
+        // Check if the user has permission to access the selected database
+        String query = "SELECT * FROM mysql.db WHERE user = '" +
+                storedUser + "' AND host = '%' AND db = '" +
+                selectedDatabase.replace(".properties", "") + "';"; // Need to remove .properties
+
+        System.out.println(storedUser + "\n" + selectedDatabase);
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            if (!rs.next()) {
+                System.out.println("User does not have permission to access the database: " + selectedDatabase);
+                return ("Error: User does not have permission to access the database: " + selectedDatabase);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException("Error checking database access");
+        }
+        return ("SUCCESS");
     }
+
+
 }

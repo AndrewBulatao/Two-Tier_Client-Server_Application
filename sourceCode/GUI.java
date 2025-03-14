@@ -171,23 +171,48 @@ public class GUI implements ActionListener {
       this.window.setVisible(true);
    }
 
-   public void actionPerformed(ActionEvent var1) {
-      Object var2 = var1.getSource();
-      if (var2 == this.clearSQLBut) {
+   public void actionPerformed(ActionEvent e) {
+      // Check if the source of the event is the clearSQLBut button
+      if (e.getSource() == clearSQLBut) {
          sqlCmdText.setText("");
       }
 
-      if (var2 == this.exitAppBut) {
-         System.exit(0);
-         this.window.dispose();
-         if (var2 == this.clearResBut) {
-            resultArea.setText("");
-         }
+      if (e.getSource() == exitAppBut) {
+         System.exit(0);  // Exit the application
+         this.window.dispose();  // Close the window
+      }
 
-         if (var2 == this.disconnectBut) {
-         }
+      if (e.getSource() == clearResBut) {
+         resultArea.setText("");  // Clear results window
+      }
 
-         if (var2 == this.connectBut) {
+      if (e.getSource() == disconnectBut) {
+         // Add code to disconnect if needed
+      }
+
+      if (e.getSource() == connectBut) {
+         String selectedUser = (String) userDrop.getSelectedItem();
+         String selectedURL = (String) urlDrop.getSelectedItem();
+         String enteredUser = usernameText.getText();
+         String enteredPass = passwordText.getText();
+
+         try {
+            // Validate login credentials using checkIfLoginValid method
+            String validationResult = db.checkIfLoginValid(selectedUser, selectedURL, enteredUser, enteredPass);
+
+            if (validationResult.equals("SUCCESS")) {
+               // If login is valid, update connection label and set color to green
+               connectionLabel.setText("CONNECTED TO: " + selectedURL);
+               connectionLabel.setForeground(Color.GREEN);
+            } else {
+               // If login is invalid, show specific error message
+               connectionLabel.setText("CONNECTION FAILED");
+               connectionLabel.setForeground(Color.RED);
+               JOptionPane.showMessageDialog(window, validationResult, "Login Error", JOptionPane.ERROR_MESSAGE);
+            }
+         } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(window, "Database Error: " + ex.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
          }
       }
 
