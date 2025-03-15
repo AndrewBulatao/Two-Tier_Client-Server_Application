@@ -99,7 +99,7 @@ public class GUI implements ActionListener {
    }
 
 
-      public void createWindow() {
+   public void createWindow() {
       this.window.setSize(1100, 800);
       this.window.setDefaultCloseOperation(3);
       this.window.setResizable(true);
