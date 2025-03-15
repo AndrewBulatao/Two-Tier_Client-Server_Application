@@ -10,14 +10,7 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class GUI implements ActionListener {
    private static final int WINDOW_WIDTH = 1100;
@@ -45,6 +38,9 @@ public class GUI implements ActionListener {
    private final JLabel passwordLabel = new JLabel("Password");
    private static JTextField usernameText = new JTextField();
    private static JTextField passwordText = new JTextField();
+   private JTable resultTable;
+   private JScrollPane tableScrollPane;
+
    private static JTextArea sqlCmdText = new JTextArea();
    JComboBox<String> urlDrop = new JComboBox();
    JComboBox<String> userDrop = new JComboBox();
@@ -59,8 +55,18 @@ public class GUI implements ActionListener {
    JButton clearResBut = new JButton("Clear Results Window");
    JButton exitAppBut = new JButton("Close application");
 
-   public GUI(DatabaseReader var1) {
-      this.db = var1;
+   public GUI(DatabaseReader initDB) {
+      this.db = initDB;
+   }
+
+   // Init global vars
+   String selectedUser, selectedURL, enteredUser, enteredPass;
+
+   public void restartVars(){
+      selectedUser = "";
+      selectedURL = "";
+      enteredUser = "";
+      enteredPass = "";
    }
 
    public void populateUserDrop() {
@@ -187,14 +193,27 @@ public class GUI implements ActionListener {
       }
 
       if (e.getSource() == disconnectBut) {
-         // Add code to disconnect if needed
+         // Clear the variables
+         resultArea.setText("");  // Clear results window
+
+
+         if (selectedURL == null || selectedURL.isEmpty()) {
+            connectionLabel.setText("You are not connected to anything");
+         } else{
+            connectionLabel.setText("Disconnected from: " + selectedURL);
+            selectedUser = "";
+            selectedURL = "";
+            enteredUser = "";
+            enteredPass = "";
+            connectionLabel.setForeground(Color.RED);
+         }
       }
 
       if (e.getSource() == connectBut) {
-         String selectedUser = (String) userDrop.getSelectedItem();
-         String selectedURL = (String) urlDrop.getSelectedItem();
-         String enteredUser = usernameText.getText();
-         String enteredPass = passwordText.getText();
+         selectedUser = (String) userDrop.getSelectedItem();
+         selectedURL = (String) urlDrop.getSelectedItem();
+         enteredUser = usernameText.getText();
+         enteredPass = passwordText.getText();
 
          try {
             // Validate login credentials using checkIfLoginValid method
@@ -209,6 +228,7 @@ public class GUI implements ActionListener {
                connectionLabel.setText("CONNECTION FAILED");
                connectionLabel.setForeground(Color.RED);
                JOptionPane.showMessageDialog(window, validationResult, "Login Error", JOptionPane.ERROR_MESSAGE);
+               restartVars();
             }
          } catch (SQLException ex) {
             ex.printStackTrace();
@@ -216,5 +236,32 @@ public class GUI implements ActionListener {
          }
       }
 
+      if (e.getSource() == executeSQLBut){
+         // Retrieve the SQL query from the text area
+         String sqlQuery = sqlCmdText.getText().trim();
+
+         // Ensure the query is not empty
+         if (sqlQuery.isEmpty()) {
+            JOptionPane.showMessageDialog(window, "SQL Command cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+         }
+
+         // Ensure a connection exists before executing SQL
+         if (selectedURL == null || selectedURL.isEmpty()) {
+            JOptionPane.showMessageDialog(window, "No database connection established.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+         }
+
+         try {
+            // Execute the query and fetch the result (assuming db.executeSQL() exists)
+            String result = db.executeSQL(sqlQuery);
+
+            // Display result in the result area
+            resultArea.setText(result);
+         } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(window, "SQL Execution Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+         }
+      }
    }
 }
