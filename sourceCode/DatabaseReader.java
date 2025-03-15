@@ -127,48 +127,56 @@ public class DatabaseReader {
 
     public DefaultTableModel executeSQL(String query) throws SQLException {
         DefaultTableModel tableModel = new DefaultTableModel(); // Table model for JTable
-        String[] queries = query.split(";");
+        String[] queries = query.split(";"); // Split query into individual parts, assuming semi-colons separate them
 
         try (Statement stmt = conn.createStatement()) {
-            for (String q : queries) {
-                q = q.trim(); // Remove whitespace
+            for (int i = 0; i < queries.length; i++) {
+                String q = queries[i].trim(); // Remove leading and trailing whitespace
 
                 if (q.isEmpty()) continue; // Skip empty queries
+
+                // Clear any existing rows before processing a new query
+                tableModel.setRowCount(0);  // This clears the existing data in the table model
 
                 boolean hasResultSet = stmt.execute(q);
 
                 if (hasResultSet) {
-                    // Process SELECT and SHOW results
+                    // Process SELECT or SHOW results
                     try (ResultSet rs = stmt.getResultSet()) {
                         int columnCount = rs.getMetaData().getColumnCount();
 
                         // Add column names to table model
                         Vector<String> columnNames = new Vector<>();
-                        for (int i = 1; i <= columnCount; i++) {
-                            columnNames.add(rs.getMetaData().getColumnName(i));
+                        for (int col = 1; col <= columnCount; col++) {
+                            columnNames.add(rs.getMetaData().getColumnName(col));
                         }
                         tableModel.setColumnIdentifiers(columnNames);
 
                         // Add rows to table model
                         while (rs.next()) {
                             Vector<Object> row = new Vector<>();
-                            for (int i = 1; i <= columnCount; i++) {
-                                row.add(rs.getObject(i));
+                            for (int col = 1; col <= columnCount; col++) {
+                                row.add(rs.getObject(col));
                             }
                             tableModel.addRow(row);
                         }
                     }
                 } else {
-                    // Process UPDATE, INSERT, DELETE (handle update count if needed)
+                    // Process UPDATE, INSERT, DELETE queries (handle update count if needed)
                     tableModel.addRow(new Object[]{"Query executed successfully. Rows affected: " + stmt.getUpdateCount()});
                 }
             }
         } catch (SQLException e) {
+            // Print the stack trace to the terminal
             e.printStackTrace();
+
+            // Throw an exception with a more detailed message including the SQL error
             throw new SQLException("Error executing SQL: " + e.getMessage());
         }
 
-        return tableModel; // Return the table model instead of the result string
+        return tableModel; // Return the table model with results
     }
+
+
 
 }
