@@ -1,5 +1,6 @@
 package sourceCode;
 
+import javax.swing.table.DefaultTableModel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
+
 
 public class DatabaseReader {
     private Connection conn;
@@ -120,9 +123,10 @@ public class DatabaseReader {
     }
 
     // Method to execute SQL queries (SELECT, UPDATE, INSERT, DELETE)
-    public String executeSQL(String query) throws SQLException {
-        String lastResult = ""; // Store only the latest query result
 
+
+    public DefaultTableModel executeSQL(String query) throws SQLException {
+        DefaultTableModel tableModel = new DefaultTableModel(); // Table model for JTable
         String[] queries = query.split(";");
 
         try (Statement stmt = conn.createStatement()) {
@@ -135,28 +139,28 @@ public class DatabaseReader {
 
                 if (hasResultSet) {
                     // Process SELECT and SHOW results
-                    StringBuilder result = new StringBuilder();
                     try (ResultSet rs = stmt.getResultSet()) {
                         int columnCount = rs.getMetaData().getColumnCount();
 
-                        // Append column headers
+                        // Add column names to table model
+                        Vector<String> columnNames = new Vector<>();
                         for (int i = 1; i <= columnCount; i++) {
-                            result.append(rs.getMetaData().getColumnName(i)).append("\t");
+                            columnNames.add(rs.getMetaData().getColumnName(i));
                         }
-                        result.append("\n");
+                        tableModel.setColumnIdentifiers(columnNames);
 
-                        // Append row data
+                        // Add rows to table model
                         while (rs.next()) {
+                            Vector<Object> row = new Vector<>();
                             for (int i = 1; i <= columnCount; i++) {
-                                result.append(rs.getString(i)).append("\t");
+                                row.add(rs.getObject(i));
                             }
-                            result.append("\n");
+                            tableModel.addRow(row);
                         }
                     }
-                    lastResult = result.toString(); // Store only the latest result
                 } else {
-                    // Process UPDATE, INSERT, DELETE
-                    lastResult = "Query executed successfully. Rows affected: " + stmt.getUpdateCount();
+                    // Process UPDATE, INSERT, DELETE (handle update count if needed)
+                    tableModel.addRow(new Object[]{"Query executed successfully. Rows affected: " + stmt.getUpdateCount()});
                 }
             }
         } catch (SQLException e) {
@@ -164,6 +168,7 @@ public class DatabaseReader {
             throw new SQLException("Error executing SQL: " + e.getMessage());
         }
 
-        return lastResult; // Return only the latest command's output
+        return tableModel; // Return the table model instead of the result string
     }
+
 }

@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 
 public class GUI implements ActionListener {
    private static final int WINDOW_WIDTH = 1100;
@@ -41,6 +42,7 @@ public class GUI implements ActionListener {
    private JTable resultTable;
    private JScrollPane tableScrollPane;
 
+   private JScrollPane scrollPane;
    private static JTextArea sqlCmdText = new JTextArea();
    JComboBox<String> urlDrop = new JComboBox();
    JComboBox<String> userDrop = new JComboBox();
@@ -106,6 +108,10 @@ public class GUI implements ActionListener {
       this.populateUserDrop();
       this.populateDatabaseDrop();
 
+      DefaultTableModel tableModel = new DefaultTableModel();
+      resultTable = new JTable(tableModel); // Initialize JTable with DefaultTableModel
+      tableScrollPane = new JScrollPane(resultTable); // Add JScrollPane to allow scrolling
+
       Container var1 = this.window.getContentPane();
       var1.setLayout(new GridLayout(2, 1));
       var1.add(this.topSection);
@@ -114,6 +120,8 @@ public class GUI implements ActionListener {
       this.topSection.add(this.topLeft);
       this.topSection.add(this.topRight);
       this.topRight.setBackground(Color.LIGHT_GRAY);
+
+      // Top left
       this.topLeft.add(this.connectionTitle);
       this.topLeft.add(this.blankFiller);
       this.topLeft.add(this.urlPropLabel);
@@ -122,11 +130,12 @@ public class GUI implements ActionListener {
       this.topLeft.add(this.userDrop);
       this.topLeft.add(this.usernameLabel);
       this.topLeft.add(usernameText);
-      this.topLeft.add(usernameText);
       this.topLeft.add(this.passwordLabel);
       this.topLeft.add(passwordText);
       this.topLeft.add(this.connectBut);
       this.topLeft.add(this.disconnectBut);
+
+      // Setting sizes
       this.connectionTitle.setPreferredSize(new Dimension(500, 30));
       this.urlPropLabel.setPreferredSize(new Dimension(250, 40));
       this.userPropLabel.setPreferredSize(new Dimension(250, 40));
@@ -138,29 +147,46 @@ public class GUI implements ActionListener {
       this.disconnectBut.setPreferredSize(new Dimension(250, 40));
       this.userDrop.setPreferredSize(new Dimension(250, 40));
       this.urlDrop.setPreferredSize(new Dimension(250, 40));
+
+      // Top right
       this.topRight.add(this.sqlTitle);
       this.topRight.add(sqlCmdText);
       this.topRight.add(this.clearSQLBut);
       this.topRight.add(this.executeSQLBut);
+
+      // Seting sizes
       this.sqlTitle.setPreferredSize(new Dimension(500, 30));
       sqlCmdText.setPreferredSize(new Dimension(500, 200));
       this.clearSQLBut.setPreferredSize(new Dimension(250, 40));
       this.executeSQLBut.setPreferredSize(new Dimension(250, 40));
+
+      // Setting colors
       this.connectionTitle.setForeground(Color.BLUE);
       this.sqlTitle.setForeground(Color.BLUE);
       this.clearSQLBut.setForeground(Color.RED);
       this.executeSQLBut.setForeground(Color.GREEN);
       this.botSection.setBackground(Color.GRAY);
+
+      // Adding bottom section
       this.botSection.add(connectionLabel);
       this.botSection.add(resultLabel);
-      this.botSection.add(resultArea);
+      this.botSection.add(tableScrollPane);
+
+      //this.botSection.add(resultArea);
       this.botSection.add(this.clearResBut);
       this.botSection.add(this.exitAppBut);
+
+
+      // Setting sizes
       connectionLabel.setPreferredSize(new Dimension(550, 30));
       resultLabel.setPreferredSize(new Dimension(545, 30));
-      resultArea.setPreferredSize(new Dimension(1000, 250));
+      //resultArea.setPreferredSize(new Dimension(1000, 250));
+      tableScrollPane.setPreferredSize(new Dimension(1000, 250));
+
       this.clearResBut.setPreferredSize(new Dimension(250, 40));
       this.exitAppBut.setPreferredSize(new Dimension(250, 40));
+
+      // Setting colors
       connectionLabel.setOpaque(true);
       connectionLabel.setBackground(Color.LIGHT_GRAY);
       connectionLabel.setForeground(Color.RED);
@@ -168,6 +194,8 @@ public class GUI implements ActionListener {
       connectionLabel.setHorizontalAlignment(0);
       resultLabel.setHorizontalAlignment(0);
       resultArea.setEditable(false);
+
+
       this.connectBut.addActionListener(this);
       this.clearSQLBut.addActionListener(this);
       this.executeSQLBut.addActionListener(this);
@@ -176,6 +204,7 @@ public class GUI implements ActionListener {
       this.exitAppBut.addActionListener(this);
       this.window.setVisible(true);
    }
+
 
    public void actionPerformed(ActionEvent e) {
       // Check if the source of the event is the clearSQLBut button
@@ -236,7 +265,8 @@ public class GUI implements ActionListener {
          }
       }
 
-      if (e.getSource() == executeSQLBut){
+      // Assuming you have a JTable named resultTable in your GUI
+      if (e.getSource() == executeSQLBut) {
          // Retrieve the SQL query from the text area
          String sqlQuery = sqlCmdText.getText().trim();
 
@@ -253,15 +283,17 @@ public class GUI implements ActionListener {
          }
 
          try {
-            // Execute the query and fetch the result (assuming db.executeSQL() exists)
-            String result = db.executeSQL(sqlQuery);
+            // Execute the query and fetch the result as a DefaultTableModel
+            DefaultTableModel tableModel = db.executeSQL(sqlQuery);
 
-            // Display result in the result area
-            resultArea.setText(result);
+            // Set the table model to the resultTable
+            resultTable.setModel(tableModel);
+
          } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(window, "SQL Execution Error: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
          }
       }
+
    }
 }
