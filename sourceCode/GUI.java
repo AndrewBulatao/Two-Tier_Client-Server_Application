@@ -34,7 +34,7 @@ public class GUI implements ActionListener {
    private final JLabel blankFiller = new JLabel("");
    private final JLabel sqlTitle = new JLabel("Enter an SQL Command");
    private final JLabel urlPropLabel = new JLabel("DB URL Properties");
-   private final JLabel userPropLabel = new JLabel("User Properties");
+   private final JLabel userPropLabel = new JLabel("Users");
    private final JLabel usernameLabel = new JLabel("Username");
    private final JLabel passwordLabel = new JLabel("Password");
    private static JTextField usernameText = new JTextField();
@@ -178,7 +178,7 @@ public class GUI implements ActionListener {
 
 
       // Setting sizes
-      connectionLabel.setPreferredSize(new Dimension(550, 30));
+      connectionLabel.setPreferredSize(new Dimension(950, 30));
       resultLabel.setPreferredSize(new Dimension(545, 30));
       //resultArea.setPreferredSize(new Dimension(1000, 250));
       tableScrollPane.setPreferredSize(new Dimension(1000, 250));
@@ -230,10 +230,7 @@ public class GUI implements ActionListener {
             connectionLabel.setText("You are not connected to anything");
          } else{
             connectionLabel.setText("Disconnected from: " + selectedURL);
-            selectedUser = "";
-            selectedURL = "";
-            enteredUser = "";
-            enteredPass = "";
+            restartVars();
             connectionLabel.setForeground(Color.RED);
          }
       }
@@ -250,7 +247,8 @@ public class GUI implements ActionListener {
 
             if (validationResult.equals("SUCCESS")) {
                // If login is valid, update connection label and set color to green
-               connectionLabel.setText("CONNECTED TO: " + selectedURL);
+               String fullURL = db.getFullURL(selectedURL);
+               connectionLabel.setText("CONNECTED TO: " + fullURL);
                connectionLabel.setForeground(Color.GREEN);
             } else {
                // If login is invalid, show specific error message

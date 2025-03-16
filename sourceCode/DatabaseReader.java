@@ -49,21 +49,29 @@ public class DatabaseReader {
     // Method to get all users
     public List<String> getUsers() throws SQLException {
         List<String> users = new ArrayList<>();
-        String query = "SELECT DISTINCT user FROM mysql.user WHERE host = '%';";
+        String query = "SELECT user, host FROM mysql.user WHERE user NOT IN ('mysql.infoschema', 'mysql.session', 'mysql.sys');";  // Exclude 'root' user
+        System.out.println(query);
 
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
 
+            // Loop through the result set and print out the data for each row
             while (rs.next()) {
                 String user = rs.getString("user") + ".properties";
+                String host = rs.getString("host");
+                System.out.println("User: " + user + ", Host: " + host); // Print each user and host
                 users.add(user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new SQLException("Error retrieving users");
         }
+
         return users;
     }
+
+
+
 
     // Method to get all databases
     public List<String> getDatabases() throws SQLException {
@@ -107,24 +115,10 @@ public class DatabaseReader {
             return ("ERROR: Invalid username or password.");
         }
 
-        String query = "SELECT * FROM mysql.db WHERE user = '" + storedUser + "' AND host = '%' AND db = '" + selectedDatabase.replace(".properties", "") + "';";
-
-        try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-
-            if (!rs.next()) {
-                return ("Error: User does not have permission to access the database: " + selectedDatabase);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new SQLException("Error checking database access");
-        }
-        return "SUCCESS";
+        return ("SUCCESS");
     }
 
     // Method to execute SQL queries (SELECT, UPDATE, INSERT, DELETE)
-
-
     public DefaultTableModel executeSQL(String query) throws SQLException {
         DefaultTableModel tableModel = new DefaultTableModel(); // Table model for JTable
         String[] queries = query.split(";"); // Split query into individual parts, assuming semi-colons separate them
@@ -136,7 +130,7 @@ public class DatabaseReader {
                 if (q.isEmpty()) continue; // Skip empty queries
 
                 // Clear any existing rows before processing a new query
-                tableModel.setRowCount(0);  // This clears the existing data in the table model
+                tableModel.setRowCount(0);
 
                 boolean hasResultSet = stmt.execute(q);
 
@@ -177,6 +171,37 @@ public class DatabaseReader {
         return tableModel; // Return the table model with results
     }
 
+
+    public String getFullURL(String curURL) {
+        try {
+            Properties dbp = new Properties();
+
+            // Use the full URL with .properties
+            String dbPath = new File("sourceCode/properties/" + curURL).getAbsolutePath();
+
+            // Debug print to verify the formed path
+            System.out.println("Path to properties file: " + dbPath);
+
+            // Check if the file exists before proceeding
+            File file = new File(dbPath);
+            if (!file.exists()) {
+                System.out.println("File does not exist at: " + dbPath);
+                return "Error loading URL";  // Return early if file doesn't exist
+            }
+
+            // Load the properties file
+            try (FileInputStream dbFile = new FileInputStream(dbPath)) {
+                dbp.load(dbFile);
+            }
+
+            // Get and return the db.url from the properties
+            return dbp.getProperty("db.url");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Error loading URL";  // In case of failure
+        }
+    }
 
 
 }
